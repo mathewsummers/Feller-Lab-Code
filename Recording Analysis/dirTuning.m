@@ -1,0 +1,76 @@
+function [hF, prefDir, DSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimDirs,showLess,makeFig)
+
+if nargin<4 || isempty(makeFig)
+    makeFig = 1;
+end
+if nargin<3 || isempty(showLess)
+    showLess = 0;
+end
+
+ctMean = mean(ctSort,2);
+ctSortPlot = [ctSort; ctSort(1,:)];
+ctMeanPlot = [ctMean; ctMean(1,:)];
+
+nReps = size(ctSort,2);
+
+uDirs = unique(stimDirs);
+uDirs = deg2rad(uDirs);
+
+[x,y] = pol2cart(uDirs, ctMean / sum(ctMean));
+prefDir = atan2d(sum(y),sum(x));
+if prefDir < 0
+    prefDir = prefDir + 360;
+end
+vecLength = sqrt(sum(x)^2 + sum(y)^2);
+
+nDirs = length(uDirs);
+incDirs = 360 / nDirs; %direction increments
+prefIndx = round(prefDir / incDirs) + 1;
+if prefIndx > nDirs
+    prefIndx = 1;
+end
+nullIndx = prefIndx - (nDirs / 2);
+if nullIndx < 1
+    nullIndx = nullIndx + nDirs;
+end
+DSI = (ctMean(prefIndx) - ctMean(nullIndx) ) / (ctMean(prefIndx) + ctMean(nullIndx));
+
+prefSpikes = ctMean(prefIndx);
+nullSpikes = ctMean(nullIndx);
+
+titleStr = sprintf('Pref Dir %3.1f DSI %4.2f Vec Length %4.2f',prefDir,DSI,vecLength);
+
+uDirs = [uDirs; uDirs(1)];
+uDirsPlot = repmat(uDirs,1,nReps);
+
+
+if prefDir < 0
+    prefDir = prefDir + 360;
+end
+
+
+
+%% Plot figure
+if ~showLess
+    if makeFig
+        hF = figure;
+    else
+        hF = [];
+    end
+    
+    
+    plotChild = polar(uDirsPlot,ctSortPlot);
+    set(plotChild(1:nReps),'LineWidth',1);
+    
+    hold on
+    
+    plotChild = polar(uDirs,ctMeanPlot,'k');
+    set(plotChild(1),'LineWidth',2)
+    
+    plotChild = compass(sum(x)*max(ctMean),sum(y)*max(ctMean),'k'); %think about this
+    set(plotChild(1),'LineWidth',1.5)
+    
+    title(titleStr);
+else
+    hF = [];
+end
