@@ -4,12 +4,13 @@ function d = grabTif(fn)
 
 info = imfinfo(fn); %metadata struct
 [nFrames,~] = size(info);
-info(1).Width;
+H = info(1).Height;
+W = info(1).Width;
 
-d = NaN(info(1).Width,info(1).Height,nFrames);
+d = NaN(H,W,nFrames);
 
 for i = 1:nFrames
-    d(:,:,i) = imread(fn,i);
+    d(:,:,i) = imread(fn,'Index',i,'Info',info);
 end
 
 end

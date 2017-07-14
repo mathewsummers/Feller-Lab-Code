@@ -1,6 +1,6 @@
 function plotDF(dF,stimDF,fMaxSort,stimDirs,ROI)
 
-Fs = 1.48;%2.96;
+Fs = 2.96;%1.48;%2.96;
 
 [nY,nStim,nROIs] = size(stimDF);
 y = stimDF(:,:,ROI);
@@ -43,7 +43,7 @@ tSec = tFrames/Fs; %time vector in seconds
 %%tStimSec = (preStimWait:(iti+stim):(tSec(end)));%(12:20:480)/Fs;
 plotStim = [tStimSec(1:end-1); tStimSec(1:end-1) + stim; tStimSec(1:end-1) + stim; tStimSec(2:end)]; %Bad fixes follow
 plotStim = [reshape(plotStim,1,(nStim - 1)*4) tStimSec(end) tStimSec(end)+stim];
-plotArea = [repmat([1 1 -1 -1],1,(nStim - 1)) 1 1];
+plotArea = [repmat([3 3 -1 -1],1,(nStim - 1)) 3 3];
 %%%
 
 figure; 
@@ -60,7 +60,7 @@ hold on
 t = 0:(nY - 1);
 t = round(t/Fs,1);
 plotDirs = 0:(360/nDirs):359;
-co = winter(nDirs);
+co = hsv(nDirs);
 for j = 1:nDirs
     plot(t,b(:,j),'color',co(j,:),'linewidth',1);
 end
