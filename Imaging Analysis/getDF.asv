@@ -16,18 +16,19 @@ nStims = numel(stimDirs);
 % iti = 10; %inter  trial interval, sec
 % upTime = 7.14;%3.6; %time of stim, sec %7.14 ; 3.48
 respWindow =5;%1.5; %sec, added to stim time
+respWindow = ceil(respWindow * Fs); %convert to frames
 
 
 
 tFrames = 1:nFrames; %time vector in frames
-%tSec = (tFrames - 1)/Fs; %time vector in seconds
+tSec = (tFrames - 1)/Fs; %time vector in seconds
 %tStimSec = preStimWait:(upTime+iti):((nStims-1)*(upTime+iti) + preStimWait); %times of stim onset in seconds
 tStimSec = stim(:,[7 8]);
 tStimFrame = floor(tStimSec * Fs); %times of stim onset in frames
 upTime = tStimSec(1,2) - tStimSec(1,1);
 iti = tStimSec(2,1) - tStimSec(1,2);
 
-nRespFrames = ceil((respWindow + upTime)*Fs); %number of frames per stim plus 1.5 seconds
+nRespFrames = ceil(upTime*Fs) + respWindow; %number of frames per stim plus 1.5 seconds
 %nInterFrames = floor(iti*Fs); %number of frames in iti minus one
 nInterFrames = round((iti+upTime)*Fs - nRespFrames);
 
@@ -35,7 +36,7 @@ stimPeriod = NaN(nRespFrames,nStims);
 preStimPeriod = NaN(nInterFrames,nStims);
 
 for i = 1:nStims
-    stimPeriod(:,i) = tStimFrame(i,1):tStimFrame(i,1) + nRespFrames - 1;
+    stimPeriod(:,i) = tStimFrame(i,1):tStimFrame(i,2) + respWindow - 1;
     preStimPeriod(:,i) = tStimFrame(i,1)-nInterFrames:tStimFrame(i,1)-1;
 end
 %Establish frames where prestim and stim happen
@@ -44,7 +45,7 @@ nTraceFrames = (nRespFrames + nInterFrames)*nStims;
 stimDF = NaN(nRespFrames,nStims,nROIs);
 dF = NaN(nTraceFrames,nROIs);
 
-for j = 1:nROIs
+for j = 1:nROIs %First col of traces isn't real
     d = traces(:,j);
     preF = d(preStimPeriod);
     stimF = d(stimPeriod);

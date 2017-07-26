@@ -1,10 +1,12 @@
-function plotDF(dF,stimDF,fMaxSort,stimDirs,ROI)
+function plotDF(dF,stimDF,fMaxSort,stimDirs,ROI,Fs)
 
-Fs = 2.96;%1.48;%2.96;
+if nargin < 6 || isempty(Fs)
+    Fs = 1.48;%2.96;
+end
 
 [nY,nStim,nROIs] = size(stimDF);
 y = stimDF(:,:,ROI);
-y = reshape(y,nY*nStim,1);
+%y = reshape(y,nY*nStim,1);
 
 % figure;
 % plot(y,'g','LineWidth',2);
@@ -69,9 +71,12 @@ xlabel('Time (sec)');
 ylabel('\DeltaF/F')
 legend(num2str(plotDirs'),'Location','Best');
 
+%%
+dFSort = quickSort(y,stimDirs);
+plotDirTraces(dFSort,stimDirs,Fs)
+%%
 hF = dirTuning(fMaxSort(:,:,ROI),stimDirs);
 hF.Children.Title.String =['ROI ' num2str(ROI) ' ' hF.Children.Title.String];
-
 
 end
 

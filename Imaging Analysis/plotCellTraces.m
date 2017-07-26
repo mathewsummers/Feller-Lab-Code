@@ -1,12 +1,17 @@
-function plotCellTraces(dF,thresh,color)
-if nargin < 3 || isempty(color)
+function plotCellTraces(dF,Fs,thresh,color)
+%plot entire dF traces of all cells above a specified threshold. Intended
+%mostly for spot analysis
+
+if nargin < 4 || isempty(color)
     color = [ 0.4660    0.6740    0.1880];
 end
-if nargin < 2 || isempty(thresh)
+if nargin < 3 || isempty(thresh)
     thresh = .5;
 end
+if nargin < 2 || isempty(Fs)
+    Fs = 1.48;
+end
 
-Fs = 1.48;
 [nFrames,nROIs] = size(dF);
 tFrames = 1:nFrames;
 tSec = (tFrames - 1)/Fs;
