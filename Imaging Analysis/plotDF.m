@@ -38,6 +38,8 @@ tStimFrames = nITI:(nY + nITI):(nY + nITI)*(nStim);
 tStimSec = tStimFrames / Fs;
 
 roiDF = dF(:,ROI);
+maxDF = max(1.5 * max(roiDF),.8); %formerly 3
+minDF = min(1.5 * min(roiDF),-.4); %formerly -1
 
 tFrames = 0:(nFrames-1); %time vector in frames
 tSec = tFrames/Fs; %time vector in seconds
@@ -45,7 +47,7 @@ tSec = tFrames/Fs; %time vector in seconds
 %%tStimSec = (preStimWait:(iti+stim):(tSec(end)));%(12:20:480)/Fs;
 plotStim = [tStimSec(1:end-1); tStimSec(1:end-1) + stim; tStimSec(1:end-1) + stim; tStimSec(2:end)]; %Bad fixes follow
 plotStim = [reshape(plotStim,1,(nStim - 1)*4) tStimSec(end) tStimSec(end)+stim];
-plotArea = [repmat([3 3 -1 -1],1,(nStim - 1)) 3 3];
+plotArea = [repmat([maxDF maxDF minDF minDF],1,(nStim - 1)) maxDF maxDF];
 %%%
 
 figure; 
@@ -55,6 +57,7 @@ hold on
 plot(tSec,roiDF,'lineWidth',1)
 ylabel('\DeltaF/F'); xlabel('Time (sec)')
 xlim([0 tSec(end)]);
+ylim([minDF maxDF]);
 %set(gca,'XTick',[]);
 
 figure;
@@ -72,8 +75,8 @@ ylabel('\DeltaF/F')
 legend(num2str(plotDirs'),'Location','Best');
 
 %%
-dFSort = quickSort(y,stimDirs);
-plotDirTraces(dFSort,stimDirs,Fs)
+%dFSort = quickSort(y,stimDirs);
+plotDirTraces(stimDF,stimDirs,ROI,Fs)
 %%
 hF = dirTuning(fMaxSort(:,:,ROI),stimDirs);
 hF.Children.Title.String =['ROI ' num2str(ROI) ' ' hF.Children.Title.String];

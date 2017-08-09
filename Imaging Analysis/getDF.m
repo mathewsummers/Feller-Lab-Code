@@ -1,4 +1,7 @@
 function [stimDF,dF] = getDF(traces,stim,Fs)
+%calculates dF/F's for a fluorescent time trace "traces", based on F0 from
+%inter trial intervals. Bins dF by stimulus to become more analogous to a
+%clampex recording.
 
 if nargin < 3 || isempty(Fs)
     Fs = 1.48; %sampling rate, Hz %2.96 for Ryan

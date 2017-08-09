@@ -2,11 +2,11 @@ function hF = showTif(d)
 imPos = [.05 .05 .9 .9];
 barPos = [imPos(1) 0 imPos(3) .05];
 hF = figure;
-hA = axes(hF,'Units','normalized','Position',imPos);
+hA = axes('Units','normalized','Position',imPos);
 
 [H,W,T] = size(d);
 
-imagesc(hA,d(:,:,1));
+imagesc(d(:,:,1));
 hA.XTick = [];
 hA.YTick = [];
 hA.NextPlot = 'replacechildren';

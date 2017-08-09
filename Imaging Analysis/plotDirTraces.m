@@ -1,26 +1,15 @@
-function plotDirTraces(dFSort,stimDirs,Fs)
+function plotDirTraces(stimDF,stimDirs,ROI,Fs)
 
-if nargin < 3 || isempty(Fs)
+if nargin < 4 || isempty(Fs)
     Fs = 1.48;
 end
 
+dFSort = quickSort(stimDF(:,:,ROI),stimDirs);
+
 [nFrames,nReps,nDirs] = size(dFSort);
-
-if nargin < 2 || isempty(stimDirs)
-    uDirs = 0:(360/nDirs):(360-360/nDirs);
-else
-    uDirs = unique(stimDirs);
-    assert(numel(uDirs) == nDirs,'Input number of stim conditions does not match sorted dF inputs');
-end
-
 nTrials = nReps*nDirs;
+uDirs = unique(stimDirs);
 plotDF = reshape(dFSort,nFrames,nTrials);
-
-% % [nFrames,nTrials,nReps] = size(dFSort); %Implementation if not sorted
-% prior to input
-% % uDirs = unique(uDirs);
-% % nuDirs = numel(uDirs);
-% % nReps = nTrials / nuDirs;
 
 tFrames = 1:nFrames;
 tSec = (tFrames - 1)/Fs;
