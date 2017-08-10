@@ -2,7 +2,7 @@ function plotCellGUI(dF)
 
 imPos = [.1 .15 .8 .75];
 barPos = [imPos(1) 0 imPos(3) .05];
-txtPos = [barPos(1) (imPos(1)+imPos(3)) barPos(3) barPos(4)];
+txtPos = [barPos(1) (imPos(2)+imPos(4)) barPos(3) barPos(4)];
 
 Fs = 1.48; %unless otherwise stated
 [nFrames,nROIs] = size(dF);
