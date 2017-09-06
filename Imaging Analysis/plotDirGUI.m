@@ -1,5 +1,11 @@
 function plotDirGUI(dF,onSort,offSort,stimDirs)
 
+[nFrames,nROIs] = size(dF);
+[onDirs,onReps,onROIs] = size(onSort);
+[offDirs,offReps,offROIs] = size(offSort);
+assert(onROIs == offROIs,'Input matrices do not share the same number of ROIs');
+assert(nROIs == onROIs,'Input matrices do not share the same number of ROIs');
+
 imPos = [.1 .15 .6 .75];
 barPos = [imPos(1) 0 imPos(3) .05];
 txtPos = [barPos(1) (imPos(2)+imPos(4)) barPos(3) barPos(4)];
@@ -13,7 +19,6 @@ r2Str = '   OFF';
 
 Fs = 1.48; %unless otherwise stated
 
-[nFrames,nROIs] = size(dF);
 tFrames = 1:nFrames;
 tSec = (tFrames - 1)/Fs;
 

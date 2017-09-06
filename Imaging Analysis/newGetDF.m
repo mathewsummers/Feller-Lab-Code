@@ -1,7 +1,8 @@
 function [stimDF,dF,onDF,offDF] = newGetDF(F,stim,Fs)
 %Calculates dF/F's for a matrix of ROI fluorescent time courses, "F", based
 %on F0 calculated from inter trial intervals. Bins dF's by stim (similar
-%to clampex), and by stim onset and offsets.
+%to clampex), and by stim onset and offsets. Meant to be used on imageJ
+%multimeasure traces.
 
 if nargin < 3 || isempty(Fs)
     Fs = 2.96;
@@ -12,7 +13,7 @@ F = F(:,2:end); %exclude 1st column of frame counts
 [~,nROIs] = size(F);
 
 %shortens right end of onTime and advances offTime
-shrinker = 2.5; %sec
+shrinker = 2; %sec
 shrinker = round(shrinker * Fs); %frames
 
 %determine timing parameters
@@ -20,7 +21,7 @@ tStimSec = stim(:,[7 8]);
 tStimFrames = floor(tStimSec * Fs);
 iti = tStimSec(2,1) - tStimSec(1,2); %sec
 iti = round(iti * Fs); %frames
-upTime = tStimSec(1,2) - tStimSec(1,1); %sec
+upTime = mean(tStimSec(:,2) - tStimSec(:,1)); %sec %using 2nd stim because 1st occassionally lasts slightly longer
 upTime = round(upTime * Fs) - shrinker; %frames
 baselineFrames = round(.5 * iti); %number of frames to calculate F0 with
 truePreTime = iti - upTime; %number of pre frames to keep for dF trace
@@ -55,7 +56,7 @@ for j = 1:nROIs
     onF = d(onIndices);
     offF = d(offIndices);
     
-    F0 = mean(preF,1);
+    F0 = mean(preF,1) + 1e-10; %to prevent divide by zero error
     
     preDF = bsxfun(@rdivide,preF,F0) - 1;
     onDF(:,:,j) = bsxfun(@rdivide,onF,F0) - 1;
