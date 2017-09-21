@@ -1,39 +1,38 @@
 classdef imExp < handle
     properties
+        IDs
+        Type
         AcqNum
+        Fs
     end
     
     methods
-        function obj = imExp(acqNum)
-            if isnumeric(acqNum)
-                acqNum = num2str(acqNum);
-                nChars = numel(acqNum);
-                for i=1:(3-nChars)
-                    acqNum = ['0' acqNum];
-                end
-            end
-            assert(ischar(acqNum),'Unrecognized acqNum input.');
+        function obj = imExp(expType,acqNum,Fs)
+            supportedExps = {'none','flash','bars'};
+            assert(ischar(acqNum),'acqNum must be a three digit string');
             
-            %obj = obj@imRetina();
-            obj.AcqNum = acqNum;
+            if any(strcmpi(expType,supportedExps))
+                obj.IDs = containers.Map('keyType','single','valueType','any');
+                obj.Type = lower(expType);
+                obj.AcqNum = acqNum;
+                obj.Fs = Fs;
+            else
+                error('Unsupported experiment type')
+            end
+            
         end
         
-        function d = load(obj)
-            %assumes Mathew's system architecture
-            sysArch = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\Imaging Sessions\';
-            newDir = sprintf('%s%s',sysArch,obj.Date);
-            oldDir = cd(newDir);
-            fn = sprintf('%s_%s_%s_%s.tif',obj.Age,obj.Marker,obj.Dye,obj.AcqNum);
-            d = grabTif(fn);
-            cd(oldDir);
+        function obj = addNeuron(obj,traces)
+            traces = traces(:,2:end); %skip first row for now
+            warning('Clipping first row of traces.');
+            [~,nROIs] = size(traces);
+            
+            for i = 1:nROIs
+                n = imNeuron(i,obj);
+                n.Trace(obj.AcqNum) = traces(:,i);
+                obj.IDs(i) = n;
+            end
         end
         
-        function hF = play(obj)
-            d = load(obj);
-            upperBound = max(max(d));
-            scaleFactor = 256 / upperBound;
-            d = scaleFactor * d;
-            hF = showTif(d);
-        end
     end
 end
