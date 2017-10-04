@@ -22,17 +22,28 @@ classdef imExp < handle
             
         end
         
-        function obj = addNeuron(obj,traces)
-            traces = traces(:,2:end); %skip first row for now
-            warning('Clipping first row of traces.');
-            [~,nROIs] = size(traces);
-            
-            for i = 1:nROIs
-                n = imNeuron(i,obj);
-                n.Trace(obj.AcqNum) = traces(:,i);
-                obj.IDs(i) = n;
+        function obj = addNeuron(obj,id,trace)
+            n = imNeuron(id,obj);
+            n.setTrace(obj.AcqNum,trace);
+            obj.IDs(id) = n;
+        end
+        
+        function [neuronList,listEmpty] = getNeuronList(obj)
+            neuronList = cell2mat(obj.IDs.keys);
+            if isempty(neuronList)
+                listEmpty = true;
+            else
+                listEmpty = false;
             end
         end
         
+        function obj = attachNeuron(obj,n,trace)
+            if any(strcmp(obj.IDs.keys,n.ID))
+                error('Neuron ID %d is already associated with the current experiment.',n.ID);
+            end
+            
+            obj.IDs(n.ID) = n;
+            n.addExp(obj,trace);
+        end
     end
 end

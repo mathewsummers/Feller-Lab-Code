@@ -52,6 +52,24 @@ classdef imNeuron < handle
             end
         end
         
+        function [expList,listEmpty] = getExpList(obj)
+            expList = obj.Exps.keys;
+            if isempty(expList)
+                listEmpty = true;
+            else
+                listEmpty = false;
+            end
+        end
+        
+        function obj = setTrace(obj,acqNum,trace)
+            %Bad, remove this later to ensure experiments always match
+            %traces
+            if any(strcmp(obj.Traces.keys,acqNum))
+                warning('Trace for acquisition number %s already exists, and is being overwritten.',acqNum)
+            end
+            obj.Traces(acqNum) = trace;
+        end
+        
         function plotStim(obj,stim)
             expCount = [];
             expList = obj.Exps.values;
