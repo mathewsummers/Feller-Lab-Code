@@ -25,7 +25,9 @@ if nargin < 2 || isempty(dirName)
     fprintf('Loading from current folder; %s \n',dirName);
 end
 
-if strcmp(dirName(3:4),'11')
+if strcmp(dirName(3:4),'10')
+    abfDate = [dirName(1:2) 'o' dirName(5:end)];
+elseif strcmp(dirName(3:4),'11')
     abfDate = [dirName(1:2) 'n' dirName(5:end)];
 elseif strcmp(dirName(3:4),'12')
     abfDate = [dirName(1:2) 'd' dirName(5:end)];

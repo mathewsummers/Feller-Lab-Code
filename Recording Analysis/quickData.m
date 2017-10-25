@@ -63,15 +63,6 @@ end
 if contFunc
     if nDirs > 1 && nSpds > 1
         error('Unsure which stim conditions to sort by.')
-    elseif nTF > 1
-        negSpds = stimDirs > 180; %assume prefDir is the one less than 180 degrees, bad assumption
-        tempFreq(negSpds) = -tempFreq(negSpds);
-        stimConds = tempFreq .* stimSpds;
-        outNames{end+1} = 'stimSpds';
-        plotAxis = 'Speed (microns / sec)';
-        plotTitle = 'Velocity Tuning';
-        velocPlot = 1;
-        dirPlot = 0;
     elseif nDirs > 1
         stimConds = stimDirs;
         outNames{end+1} = 'stimDirs';
@@ -81,6 +72,15 @@ if contFunc
         dirPlot = 1;
     elseif nSpds > 1
         stimConds = stimSpds * .65; %convert from pixels to microns
+        outNames{end+1} = 'stimSpds';
+        plotAxis = 'Speed (microns / sec)';
+        plotTitle = 'Velocity Tuning';
+        velocPlot = 1;
+        dirPlot = 0;
+    elseif nTF > 1
+        negSpds = stimDirs > 180; %assume prefDir is the one less than 180 degrees, bad assumption
+        tempFreq(negSpds) = -tempFreq(negSpds);
+        stimConds = tempFreq .* stimSpds;
         outNames{end+1} = 'stimSpds';
         plotAxis = 'Speed (microns / sec)';
         plotTitle = 'Velocity Tuning';
@@ -162,7 +162,7 @@ if exist('stimConds','var');%clean up after giving lab meeting
         end
         
         set(hF.Children,'YLim',[0 ceil(max(maxFreq*.1))*10],'XLim',[0 tEnd]);
-    else   
+    else
         
         for n=1:nTrials
             maxFreq(n) = testFreq(spTms{n},tEnd,1);
