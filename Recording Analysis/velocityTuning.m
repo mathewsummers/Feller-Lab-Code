@@ -8,6 +8,11 @@ end
 a = unique(stimSpds);
 b = numel(a) / 2;
 
+%check if inputs are all same sign
+if range(sign(ctSort)) == 0
+    ctSort = abs(ctSort);
+end
+
 totMax = max(ctSort(:));
 axMax = ceil(totMax / 10) * 10;
 %totMin = min(ctSort(:));

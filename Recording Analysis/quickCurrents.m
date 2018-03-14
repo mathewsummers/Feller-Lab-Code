@@ -1,10 +1,31 @@
-function quickCurrents(stimNum)
+function quickCurrents(stimNum,stimDate,exc)
 
-quickLoad(stimNum);
+if nargin < 3 || isempty(exc)
+    exc = 0; %not excitation
+end
+
+if nargin < 2 || isempty(stimDate)
+    quickLoad(stimNum);
+else
+    newDir = sprintf('%s%s','C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\',stimDate);
+    oldDir = cd(newDir);
+    quickLoad(stimNum,stimDate)
+end
 
 Q = sum(d)*si*1e-6;
-outNames = {'d', 'Q'};
-outVars = {d, Q};
+if exc
+    [pCur,tCur] = min(d);
+    if pCur < 0
+        pCur = abs(pCur);
+        disp('Flipping sign of peak currents');
+    else
+        disp('Sign of peak current has not been flipped.');
+    end
+else
+    [pCur,tCur] = max(d);
+end
+outNames = {'d', 'Q','pCur','tCur'};
+outVars = {d, Q, pCur, tCur};
 
 fn1 = sprintf('stim%s.txt',stimNum);
 fn2 = sprintf('stim%s',stimNum);
@@ -16,7 +37,7 @@ if exist(fn1,'file')
     
     stimDirs = stimInfo(:,1);
     try %terrible fix
-    stimSpds = stimInfo(:,2);
+        stimSpds = stimInfo(:,2);
     catch
         stimSpds = zeros(1,length(stimDirs));
     end
@@ -55,9 +76,11 @@ if contFunc
     outVars{end+1} = stimConds;
     
     qSort = quickSort(Q,stimConds);
+    pSort = quickSort(pCur,stimConds);
+    tSort = quickSort(tCur,stimConds);
     
-    outNames{end+1} = 'qSort';
-    outVars{end+1} = qSort;
+    [outNames{end+1:end+3}] = deal('qSort','pSort','tSort');
+    [outVars{end+1:end+3}] = deal(qSort,pSort,tSort);
     
     %     figure; plot(unique(stimConds),ctSort);
     %     hold on; plot(unique(stimConds),mean(ctSort,2),'k','LineWidth',2)
@@ -70,10 +93,12 @@ if contFunc
     end
     
     if dirPlot
-        [hF,prefDir,qDSI] = dirTuning(qSort,stimConds);
-        [outNames{end+1:end+2}] = deal('prefDir','qDSI');
-        [outVars{end+1:end+2}] = deal(prefDir,qDSI);
+        [hF,qPref,qDSI] = dirTuning(qSort,stimConds);
         hF.Children.XLabel.String = 'Total Charge Tuning';
+        [hF,pPref,pDSI] = dirTuning(pSort,stimConds);
+        hF.Children.XLabel.String = 'Peak Current Tuning';
+        [outNames{end+1:end+4}] = deal('qPref','qDSI','pPref','pDSI');
+        [outVars{end+1:end+4}] = deal(qPref,qDSI,pPref,pDSI);
     end
     
 end
@@ -82,3 +107,6 @@ for i = 1:length(outNames)
     assignin('base',outNames{i},outVars{i});
 end
 
+if nargin > 1 && ~isempty(stimDate)
+    cd(oldDir)
+end

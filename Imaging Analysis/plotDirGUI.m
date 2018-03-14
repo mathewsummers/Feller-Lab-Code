@@ -61,7 +61,11 @@ r2 = uicontrol(rg,'style','radiobutton','units','normalized','position',rbPos2,.
     end
 
     function plotDS
-        val = round(slider.Value);
+        if nROIs>1
+            val = round(slider.Value);
+        else
+            val = 1;
+        end
         reset(hB)
         if useOff
             dirTuning(offSort(:,:,val),stimDirs,[],0);
