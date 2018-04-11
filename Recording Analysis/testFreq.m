@@ -1,4 +1,5 @@
-function topHz = testFreq(spikes,tEnd,showLess)
+function [topHz,c] = testFreq(spikes,tEnd,showLess)
+%function still needs work
 if nargin<3 || isempty(showLess)
     showLess = 0;
 end

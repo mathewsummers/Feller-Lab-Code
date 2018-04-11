@@ -13,7 +13,9 @@ ctMeanPlot = [ctMean; ctMean(1,:)];
 
 nReps = size(ctSort,2);
 
-uDirs = unique(stimDirs);
+uDirs = unique(stimDirs); %potentially problematic way of doing things; 
+% if stimDirs is shifted in a non-uniform way (e.g. resets to 0 after passing 360) 
+% then ctSort will now be incorrectly indexed
 uDirs = deg2rad(uDirs);
 
 [x,y] = pol2cart(uDirs, ctMean / sum(ctMean));

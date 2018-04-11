@@ -4,8 +4,8 @@ classdef imBars < imExp
     end
     
     methods
-        function obj = imBars(acqNum,Fs)
-            obj@imExp('bars',acqNum,Fs);
+        function obj = imBars(R,acqNum)
+            obj@imExp(R,acqNum,'bars');
             %[~,fn,~] = fileparts(pwd);
             %str = sprintf('stim%s',acqNum);
             %obj.stim = load(str);

@@ -129,20 +129,21 @@ if exist('stimConds','var');%clean up after giving lab meeting
     if ~showLess
         hF = rasterPlot(tmSort',nSecs,plotConds');
         
-        a = ctSort'; %bad fix
-        a = a(:);
-        a = cumsum(a);
-        a = a(end) - a;
-        uConds = round(unique(stimConds));
-        nConds = numel(uConds);
-        for k = 1:nConds
-            set(hF.Children(1).Children(a(1+(k-1)*nReps)),'DisplayName',num2str(uConds(k)));
-        end
-        legend(hF.Children(1).Children(a(1:nReps:end)),'Location','BestOutside');
+        %         a = ctSort'; %bad fix
+        %         a = a(:);
+        %         a = cumsum(a);
+        %         a = a(end) - a;
+        %         uConds = round(unique(stimConds));
+        %         nConds = numel(uConds);
+        %         for k = 1:nConds
+        %             set(hF.Children(1).Children(a(1+(k-1)*nReps)),'DisplayName',num2str(uConds(k)));%will crash if no spikes to access
+        %         end
+        %         legend(hF.Children(1).Children(a(1:nReps:end)),'Location','BestOutside');
     end
     [nPts,nTrials] = size(d);
     tEnd = nPts / 1e4;
     maxFreq = zeros(1,nTrials);
+    instFreq = zeros(nPts/100,nTrials); %depends on gaussian used in testFreq
     firstSpike = zeros(1,nTrials);
     
     L = floor(sqrt(nTrials));
@@ -153,7 +154,9 @@ if exist('stimConds','var');%clean up after giving lab meeting
         
         for n=1:nTrials
             subplot(L,W,n);
-            maxFreq(n) = testFreq(spTms{n},tEnd);
+            [topHz,freqTrace] = testFreq(spTms{n},tEnd);
+            maxFreq(n) = topHz;
+            instFreq(:,n) = freqTrace;
             if ~isempty(spTms{n})
                 firstSpike(n) = spTms{n}(1);
             else
@@ -165,7 +168,9 @@ if exist('stimConds','var');%clean up after giving lab meeting
     else
         
         for n=1:nTrials
-            maxFreq(n) = testFreq(spTms{n},tEnd,1);
+            [topHz,freqTrace] = testFreq(spTms{n},tEnd,1);
+            maxFreq(n) = topHz;
+            instFreq(:,n) = freqTrace;
             if ~isempty(spTms{n})
                 firstSpike(n) = spTms{n}(1);
             else
@@ -176,8 +181,8 @@ if exist('stimConds','var');%clean up after giving lab meeting
     hzSort = quickSort(maxFreq,stimConds);
     fsSort = quickSort(firstSpike,stimConds); %first spike sort
     
-    [outNames{end+1:end+4}] = deal('maxFreq','hzSort','firstSpike','fsSort');
-    [outVars{end+1:end+4}] = deal(maxFreq,hzSort,firstSpike,fsSort);
+    [outNames{end+1:end+5}] = deal('maxFreq','hzSort','firstSpike','fsSort','instFreq');
+    [outVars{end+1:end+5}] = deal(maxFreq,hzSort,firstSpike,fsSort,instFreq);
     
     if velocPlot
         [hF,hzDSI] = velocityTuning(hzSort,stimConds);

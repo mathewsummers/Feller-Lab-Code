@@ -1,112 +1,103 @@
 classdef imRetina < handle
-    properties
+    properties (SetAccess = private)
         Date
-        Dye
-        Exps
-        Neurons
         Genotype
+        Exps %container for experiments in associated retina
+        Neurons %container for neurons in associated retina
         Rig
+    end
+    properties
         Misc
     end
     
     methods
-        function obj = imRetina(date,dye)
+        function obj = imRetina(date,genotype,rig,notes)
+            %%% construct Retina object %%%
+            supportedRigs = {'','SOS','MOM'};
+            if nargin < 4 || isempty(notes)
+                notes = [];
+            end
+            if ~any(strcmpi(rig,supportedRigs))
+                error('Unrecognized rig.');
+            end
             obj.Date = date;
-            obj.Dye = dye;
+            obj.Genotype = genotype;
             obj.Neurons = containers.Map('keyType','int32','valueType','any');
             obj.Exps = containers.Map('keyType','char','valueType','any');
+            obj.Rig = rig;
+            obj.Misc = notes;
+        end
+        %% Add Neurons to imRetina object
+        function obj = addNeurons(obj,IDs)
+            %%% Check if IDs match any previously declared neurons. %%%
+            [neuronIDsList,neuronIDsListEmpty] = obj.getNeuronList;
+            if nargin < 2 || isempty(IDs)
+                nNeurons = 1; %if no IDs supplied only add one neuron
+                if neuronIDsListEmpty
+                    IDs = 1;
+                else
+                    IDs = max(neuronIDsList) + 1;
+                end
+            else
+                neuronExists = ismember(IDs,neuronIDsList);
+                if any(neuronExists)
+                    fprintf('The following neuron already exists, and will not be added: \n');
+                    fprintf('\t%i \n',IDs(neuronExists))
+                    IDs(neuronExists) = [];
+                end
+                nNeurons = numel(IDs);
+            end
+            
+            %%% Declare neurons and add them to Retina object %%%
+            for i = 1:nNeurons
+                nObj = imNeuron(obj,IDs(i));
+                obj.Neurons(IDs(i)) = nObj;
+            end
+            
         end
         %% Add Experiment to imRetina object
-        function obj = addExp(obj,acqNum,expType,Fs)
+        function obj = addExp(obj,acqNum,IDs,expType)
             supportedExps = {'none','flash','bars'};
-            
-            if nargin < 4 || isempty(Fs)
-                Fs = 1.48; %Hz, default
-            end
-            
-            if nargin < 3 || isempty(expType)
+            %%% Check input expType matches known exp types %%%
+            if nargin < 4 || isempty(expType)
                 expType = 'none';
             elseif ~any(strcmpi(expType,supportedExps))
-                error('Unrecognized experiment type.');
+                error('Unrecognized experiment type.\n');
             end
             
-            if ~ischar(acqNum)
-                if isreal(acqNum) && rem(acqNum,1)==0
-                    acqNum = num2str(acqNum);
-                    nDigits = numel(acqNum);
-                    switch nDigits
-                        case 1
-                            acqNum = ['00' acqNum];
-                        case 2
-                            acqNum = ['0' acqNum];
-                    end
-                else
-                    error('acqNum must be an integer or a string of integers.')
-                end
+            %%% Check that input neuron IDs exist %%%
+            neuronIDsList = obj.getNeuronList;
+            if any(~ismember(IDs,neuronIDsList))
+                error('At least one provided ID does not match any declared neurons.\n')
             end
             
+            %%% Clean acqNum inputs %%%
+            acqNum = obj.cleanAcquisitionNumber(acqNum);
+            
+            %%% Check that given exp has not already been declared %%%
             if any(strcmp(obj.Exps.keys,acqNum))
-                error('Given acquisition number already has an associated experiment.')
+                error(['Given acquisition number already has an associated experiment:\n'...
+                    'Use "modifyExp" instead (in development).\n'])
             end
             
+            %%% Declare exp based on expType %%%
             switch lower(expType)
                 case 'none'
-                    expObj = imExp(expType,acqNum,Fs);
+                    expObj = imExp(obj,acqNum,expType);
                 case 'flash'
-                    expObj = imFlash(acqNum,Fs);
+                    expObj = imFlash(obj,acqNum);
                 case 'bars'
-                    expObj = imBars(acqNum,Fs);
+                    expObj = imBars(obj,acqNum);
             end
             
+            %%% Add exp to relevant neurons, add to Retina object %%%
+            nNeurons = numel(IDs);
+            for i = 1:nNeurons
+                nObj = obj.Neurons(IDs(i));
+                nObj.addExp(expObj);
+                expObj.addNeuron(nObj);
+            end
             obj.Exps(acqNum) = expObj;
-        end
-        %% Add Neurons to imExp objects
-        function obj = addNeurons(obj,acqNum,traces,IDs)
-            %check that given experiment exists
-            if ~any(strcmp(obj.getExpList,acqNum))
-                error('There does not yet exist an associated experiment for the given acquisition number.')
-            else
-                exp = obj.Exps(acqNum);
-            end
-            
-            [~,nROIs] = size(traces);
-            
-            %check if experiment already has associated neurons
-            [expNeurons,expNeuronListEmpty] = exp.getNeuronList;
-            if ~expNeuronListEmpty
-                nNeurons = numel(expNeurons);
-                prmptMsg = sprintf('Warning: Specified expriment %s already has %i associated neurons. You are attempting to add %i more. Proceed?', ...
-                    acqNum, nNeurons, nROIs);
-                button = questdlg(prmptMsg,'Continue','Continue','Cancel','Cancel');
-                if strcmpi(button,'Cancel')
-                    return
-                end
-            end
-            
-            [retinaNeurons,retinaNeuronListEmpty] = obj.getNeuronList;
-            
-            if nargin < 4 || isempty(IDs) %if IDs are not supplied, assume new neurons
-                if retinaNeuronListEmpty
-                    IDs = 1:nROIs;
-                else
-                    IDs = (max(retinaNeurons) + 1):(max(retinaNeurons) + nROIs);
-                end
-            end
-            
-            assert(numel(IDs) == nROIs,'Number of IDs must match number of input traces.')
-            
-            neuronExists = ismember(IDs,retinaNeurons); %find neurons that have already been declared
-            for i = 1:nROIs
-                if neuronExists(i)
-                    n = obj.Neurons(IDs(i));
-                    exp.attachNeuron(n,traces(:,i));
-                    obj.Neurons(IDs(i)) = n;
-                else
-                    exp.addNeuron(IDs(i),traces(:,i));
-                    obj.Neurons(IDs(i)) = exp.IDs(IDs(i));
-                end
-            end
-            
         end
         %%
         function [expList,listEmpty] = getExpList(obj)
@@ -118,12 +109,46 @@ classdef imRetina < handle
             end
         end
         
-        function [neuronList,listEmpty] = getNeuronList(obj)
-            neuronList = cell2mat(obj.Neurons.keys);
-            if isempty(neuronList)
+        function [neuronIDsList,listEmpty] = getNeuronList(obj)
+            neuronIDsList = cell2mat(obj.Neurons.keys);
+            if isempty(neuronIDsList)
                 listEmpty = true;
             else
                 listEmpty = false;
+            end
+        end
+    end
+    
+    methods (Static = true)
+        function acqNum = cleanAcquisitionNumber(acqNum)
+            %limited cleaning of acquisition number input
+            if ~ischar(acqNum) %if not a string, check if integer then convert to string
+                if isreal(acqNum) && rem(acqNum,1)==0
+                    acqNum = num2str(acqNum);
+                    nDigits = numel(acqNum);
+                    switch nDigits
+                        case 1
+                            acqNum = ['00' acqNum];
+                        case 2
+                            acqNum = ['0' acqNum];
+                    end
+                else
+                    error('acqNum must be an integer or a string of integers.\n')
+                end
+            end
+        end
+        
+        function abfDate = cleanClampexDate(dirName)
+            if strcmp(dirName(3:4),'10')
+                abfDate = [dirName(1:2) 'o' dirName(5:end)];
+            elseif strcmp(dirName(3:4),'11')
+                abfDate = [dirName(1:2) 'n' dirName(5:end)];
+            elseif strcmp(dirName(3:4),'12')
+                abfDate = [dirName(1:2) 'd' dirName(5:end)];
+            elseif strcmp(dirName(3),'0') %account for clampex's peculiar naming conventions
+                abfDate = [dirName(1:2) dirName(4:end)];
+            else
+                abfDate = dirName;
             end
         end
     end

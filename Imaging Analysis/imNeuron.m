@@ -1,57 +1,41 @@
 classdef imNeuron < handle
-    properties
+    properties (SetAccess = private)
+        Retina
         ID
-        FOV
-        Coords
-        Traces
         Exps
+    end
+    properties (SetAccess = private, Transient = true)
+        RawData
     end
     
     methods
-        function obj = imNeuron(ID,exp)
-            
-            if nargin < 2 || isempty(exp)
-                declaredByExp = 0;
-            elseif isa(exp,'imExp')
-                declaredByExp = 1;
-            else
-                error('Declaration by an unrecognized experiment object.');
-            end
-            
+        function obj = imNeuron(R,ID)
+            %%% Construct neuron object %%%
+            obj.Retina = R;
             obj.ID = ID;
-            obj.Traces = containers.Map('keyType','char','valueType','any');
+            obj.RawData = containers.Map('keyType','char','valueType','any');
             obj.Exps = containers.Map('keyType','char','valueType','any');
-            
-            if declaredByExp
-                obj.Exps(exp.AcqNum) = exp;
-            end
-            
+                        
         end
         
-        function obj = addExp(obj,expList,traceList)
-            %function to add experiment and ensuing trace to a neuron,
-            %should probably add via addNeuron function in imExp instead.
-            if isa(expList,'imExp')
-                expList = {expList}; %if a single exp input, make into cell array
-                traceList = {traceList};
-                nExps = 1;
-            elseif iscell(expList) && isa([expList{:}],'imExp')
-                nExps = numel(expList);
-            else
-                error('Input is not an imExp object, nor a cell array containing imExp objects.')
-            end
-            
-            for i = 1:nExps
-                indx = expList{i}.AcqNum;
-                if ~obj.Exps.isKey(indx) && ~obj.Traces.isKey(indx)
-                    obj.Exps(indx) = expList{i};
-                    obj.Traces(indx) = traceList{i};
-                else
-                    error('Neuron already contains an experiment with acquisition number %s',indx)
-                end
-            end
+        function obj = addExp(obj,exp)
+            %%% Add exp object to neuron's "exp" container %%%
+            obj.Exps(exp.AcqNum) = exp;
         end
         
+        function d = loadRawData(obj,acqNum)
+            %%% Load raw data
+            %%%%%%%% ADD CHECK FOR CORRESPONDING EXP ACQNUM
+            abfNum = imRetina.cleanAcquisitionNumber(acqNum);
+            abfDate = imRetina.cleanClampexDate(obj.Retina.Date);
+           
+            abfName = fprintf('%s%s',abfDate,abfNum);
+            
+            [d,si] = abfload(abfName);
+            d = squeeze(d);
+            
+        end
+                   
         function [expList,listEmpty] = getExpList(obj)
             expList = obj.Exps.keys;
             if isempty(expList)
