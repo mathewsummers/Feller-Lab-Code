@@ -1,7 +1,19 @@
 function plotDirTraces(stimDF,stimDirs,ROI,Fs)
 
-if nargin < 4 || isempty(Fs)
+if nargin < 4 || isempty(Fs) %if no Fs assume Ca2+ imaging data
     Fs = 1.48;
+    LW = 1.5;
+    scaleBar = [0 .2];
+elseif Fs == 1.48 || Fs == 2.96 %Ca2+ imaging data
+    LW = 1.5;
+    scaleBar = [0 .2];
+else %otherwise assume ephys
+    LW = .8;
+    if sum(stimDF(:)) > 0 %try to determine if primarily positive or negative signal
+        scaleBar = [0 200];
+    else
+        scaleBar = [-200 0];
+    end
 end
 
 dFSort = quickSort(stimDF(:,:,ROI),stimDirs);
@@ -36,10 +48,10 @@ for i = 1:nTrials
     pos = [(xStart + xInt*xEach) (yEnd - yInt*yEach) xEach yEach];
     hA = axes('Units','Normalized','Position',pos,'XTick',[],'YTick',[],...
         'YLim',[mindF maxdF],'XLim',[tSec(1) tSec(end)],'NextPlot','replacechildren');
-    plot(tSec,plotDF(:,i),'k','LineWidth',1.5)
+    plot(tSec,plotDF(:,i),'k','LineWidth',LW)
 end
 
-hF.Children(end).YTick = [0 .2];
+hF.Children(end).YTick = scaleBar;
 %hF.Children(end).YLabel.String = 'deltaF/F';
 
 for j = 1:nDirs

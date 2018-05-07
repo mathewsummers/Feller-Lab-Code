@@ -1,15 +1,19 @@
-function quickCurrents(stimNum,stimDate,exc)
+function quickCurrents(stimNum,stimDate,exc,showLess,varargin)
+
+if nargin < 4 || isempty(showLess)
+    showLess = 0;
+end
 
 if nargin < 3 || isempty(exc)
     exc = 0; %not excitation
 end
 
 if nargin < 2 || isempty(stimDate)
-    quickLoad(stimNum);
+    quickLoad(stimNum,[],showLess);
 else
     newDir = sprintf('%s%s','C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\',stimDate);
-    oldDir = cd(newDir);
-    quickLoad(stimNum,stimDate)
+    oldDir = cd(newDir); %necessary to change directories to load stim info
+    quickLoad(stimNum,stimDate,showLess)
 end
 
 Q = sum(d)*si*1e-6;
@@ -87,15 +91,15 @@ if contFunc
     %     ylabel('Total Spikes'); xlabel(plotAxis); title(plotTitle)
     
     if velocPlot
-        [~,qDSI] = velocityTuning(qSort,stimConds);
+        [~,qDSI] = velocityTuning(qSort,stimConds,showLess);
         outNames{end+1} = 'qDSI';
         outVars{end+1} = qDSI;
     end
     
     if dirPlot
-        [hF,qPref,qDSI] = dirTuning(qSort,stimConds);
+        [hF,qPref,qDSI] = dirTuning(qSort,stimConds,showLess);
         hF.Children.XLabel.String = 'Total Charge Tuning';
-        [hF,pPref,pDSI] = dirTuning(pSort,stimConds);
+        [hF,pPref,pDSI] = dirTuning(pSort,stimConds,showLess);
         hF.Children.XLabel.String = 'Peak Current Tuning';
         [outNames{end+1:end+4}] = deal('qPref','qDSI','pPref','pDSI');
         [outVars{end+1:end+4}] = deal(qPref,qDSI,pPref,pDSI);
@@ -103,8 +107,17 @@ if contFunc
     
 end
 
-for i = 1:length(outNames)
-    assignin('base',outNames{i},outVars{i});
+if nargin < 5
+    
+    for i = 1:length(outNames)
+        assignin('base',outNames{i},outVars{i});
+    end
+    
+else
+    for i = 1:length(varargin)
+        assignin('base',varargin{i},eval(varargin{i}));
+    end
+    
 end
 
 if nargin > 1 && ~isempty(stimDate)
