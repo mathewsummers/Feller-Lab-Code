@@ -28,7 +28,7 @@ classdef imRetina < handle
             obj.Misc = notes;
         end
         %% Add Neurons to imRetina object
-        function obj = addNeurons(obj,IDs)
+        function nObj = addNeuron(obj,IDs)
             %%% Check if IDs match any previously declared neurons. %%%
             [neuronIDsList,neuronIDsListEmpty] = obj.getNeuronList;
             if nargin < 2 || isempty(IDs)
@@ -56,14 +56,22 @@ classdef imRetina < handle
             
         end
         %% Add Experiment to imRetina object
-        function obj = addExp(obj,acqNum,IDs,expType)
-            supportedExps = {'none','flash','bars'};
+        function expObj = addExp(obj,acqNum,IDs,acqMethod,expType,varargin)
+            supportedExps = {'none','flash','bars'}; %later load this from .txt file
+            supportedMethods = {'Spikes','Vclamp','Ca'};
             %%% Check input expType matches known exp types %%%
-            if nargin < 4 || isempty(expType)
+            if nargin < 5 || isempty(expType)
                 expType = 'none';
             elseif ~any(strcmpi(expType,supportedExps))
-                error('Unrecognized experiment type.\n');
+                error('Unrecognized experiment type.');
             end
+            
+            if nargin < 4 || isempty(acqMethod)
+                acqMethod = 'Vclamp';
+            elseif ~any(strcmpi(acqMethod,supportedMethods))
+                error('Unrecognized recording method.');
+            end
+            
             
             %%% Check that input neuron IDs exist %%%
             neuronIDsList = obj.getNeuronList;
@@ -83,11 +91,17 @@ classdef imRetina < handle
             %%% Declare exp based on expType %%%
             switch lower(expType)
                 case 'none'
-                    expObj = imExp(obj,acqNum,expType);
+                    expObj = imExp(obj,acqNum,acqMethod,expType);
                 case 'flash'
-                    expObj = imFlash(obj,acqNum);
+                    %use varargin to modify defaults
+                    radius = 78 * .65;
+                    delayTime = 2;
+                    upTime = 3;
+                    downTime = 2.5;
+                    expObj = imFlash(obj,acqNum,acqMethod,radius,delayTime,upTime,downTime);
                 case 'bars'
-                    expObj = imBars(obj,acqNum);
+                    %use varargin to modify defaults
+                    expObj = imBars(obj,acqNum,acqMethod);
             end
             
             %%% Add exp to relevant neurons, add to Retina object %%%

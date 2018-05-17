@@ -1,20 +1,20 @@
 classdef imFlash < imExp
     properties
-        preStim
+        radius
+        delayTime
         upTime
         downTime
-        iti
-        nReps
     end
     
     methods
-        function obj = imFlash(R,acqNum)
-            obj@imExp(R,acqNum,'flash');
-% %             obj.preStim = 20; %sec
-% %             obj.upTime = 4;
-% %             obj.downTime = 0;
-% %             obj.iti = 20;
-% %             obj.nReps = 3;
+        function obj = imFlash(R,acqNum,acqMethod,radius,delayTime,...
+                upTime,downTime)
+            %%% Construct imExp / imFlash object %%%
+            obj@imExp(R,acqNum,acqMethod,'flash');
+            obj.radius = radius; %in microns
+            obj.delayTime = delayTime;
+            obj.upTime = upTime;
+            obj.downTime = downTime;
         end
     end
 end
