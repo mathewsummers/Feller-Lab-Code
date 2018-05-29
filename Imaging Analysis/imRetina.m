@@ -9,15 +9,20 @@ classdef imRetina < handle
     properties
         Misc
     end
+    properties (Hidden = true)
+        Directory = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
+        supportedRigs = {'','SOS','MOM'};
+        supportedExps = {'none','flash','bars'};
+        supportedMethods = {'Spikes','Vclamp','Ca'};
+    end
     
     methods
         function obj = imRetina(date,genotype,rig,notes)
             %%% construct Retina object %%%
-            supportedRigs = {'','SOS','MOM'};
             if nargin < 4 || isempty(notes)
                 notes = [];
             end
-            if ~any(strcmpi(rig,supportedRigs))
+            if ~any(strcmpi(rig,obj.supportedRigs))
                 error('Unrecognized rig.');
             end
             obj.Date = date;
@@ -57,21 +62,18 @@ classdef imRetina < handle
         end
         %% Add Experiment to imRetina object
         function expObj = addExp(obj,acqNum,IDs,acqMethod,expType,varargin)
-            supportedExps = {'none','flash','bars'}; %later load this from .txt file
-            supportedMethods = {'Spikes','Vclamp','Ca'};
             %%% Check input expType matches known exp types %%%
             if nargin < 5 || isempty(expType)
                 expType = 'none';
-            elseif ~any(strcmpi(expType,supportedExps))
+            elseif ~any(strcmpi(expType,obj.supportedExps))
                 error('Unrecognized experiment type.');
             end
             
             if nargin < 4 || isempty(acqMethod)
                 acqMethod = 'Vclamp';
-            elseif ~any(strcmpi(acqMethod,supportedMethods))
+            elseif ~any(strcmpi(acqMethod,obj.supportedMethods))
                 error('Unrecognized recording method.');
             end
-            
             
             %%% Check that input neuron IDs exist %%%
             neuronIDsList = obj.getNeuronList;
@@ -93,14 +95,14 @@ classdef imRetina < handle
                 case 'none'
                     expObj = imExp(obj,acqNum,acqMethod,expType);
                 case 'flash'
-                    %use varargin to modify defaults
+                    %use varargin to modify defaults in the future
                     radius = 78 * .65;
                     delayTime = 2;
                     upTime = 3;
                     downTime = 2.5;
                     expObj = imFlash(obj,acqNum,acqMethod,radius,delayTime,upTime,downTime);
                 case 'bars'
-                    %use varargin to modify defaults
+                    %use varargin to modify defaults in the future
                     expObj = imBars(obj,acqNum,acqMethod);
             end
             
@@ -113,6 +115,7 @@ classdef imRetina < handle
             end
             obj.Exps(acqNum) = expObj;
         end
+        
         %%
         function [expList,listEmpty] = getExpList(obj)
             expList = obj.Exps.keys;
