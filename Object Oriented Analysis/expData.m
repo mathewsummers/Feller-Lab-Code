@@ -1,27 +1,27 @@
-classdef imData < handle
+classdef expData < handle
     properties (Transient = true)
         RawData
     end
     properties
         Fs
-        Exp
+        Stim
         Neuron
     end
     
     methods
-        function obj = imData(nObj,expObj)
+        function obj = expData(nObj,stimObj)
             obj.Neuron = nObj;
-            obj.Exp = expObj;
+            obj.Stim = stimObj;
         end
         
         function [d,si] = loadRawData(obj)
             %%% Clean inputs %%%
-            abfNum = imRetina.cleanAcquisitionNumber(obj.Exp.AcqNum);
-            abfDate = imRetina.cleanClampexDate(obj.Exp.Retina.Date);
+            abfNum = expRetina.cleanAcquisitionNumber(obj.Stim.AcqNum);
+            abfDate = expRetina.cleanClampexDate(obj.Stim.Retina.Date);
             abfName = sprintf('%s%s.abf',abfDate,abfNum);
             
             %%% Switch directories %%%
-            newDir = sprintf('%s%s',obj.Exp.Retina.Directory, obj.Exp.Retina.Date);
+            newDir = sprintf('%s%s',obj.Stim.Retina.Directory, obj.Stim.Retina.Date);
             oldDir = cd(newDir);
             
             %%% Load axon binary file, squeeze singleton dimensions %%%

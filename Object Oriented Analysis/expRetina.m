@@ -1,9 +1,9 @@
-classdef imRetina < handle
+classdef expRetina < handle
     properties (SetAccess = private)
         Date
         Genotype
-        Exps %container for experiments in associated retina
         Neurons %container for neurons in associated retina
+        Stims %container for stims in associated retina
         Rig
     end
     properties
@@ -12,12 +12,12 @@ classdef imRetina < handle
     properties (Hidden = true)
         Directory = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
         supportedRigs = {'','SOS','MOM'};
-        supportedExps = {'none','flash','bars'};
+        supportedStims = {'none','flash','bars'};
         supportedMethods = {'Spikes','Vclamp','Ca'};
     end
     
     methods
-        function obj = imRetina(date,genotype,rig,notes)
+        function obj = expRetina(date,genotype,rig,notes)
             %%% construct Retina object %%%
             if nargin < 4 || isempty(notes)
                 notes = [];
@@ -28,11 +28,11 @@ classdef imRetina < handle
             obj.Date = date;
             obj.Genotype = genotype;
             obj.Neurons = containers.Map('keyType','int32','valueType','any');
-            obj.Exps = containers.Map('keyType','char','valueType','any');
+            obj.Stims = containers.Map('keyType','char','valueType','any');
             obj.Rig = rig;
             obj.Misc = notes;
         end
-        %% Add Neurons to imRetina object
+        %% Add Neurons to expRetina object
         function nObj = addNeuron(obj,IDs)
             %%% Check if IDs match any previously declared neurons. %%%
             [neuronIDsList,neuronIDsListEmpty] = obj.getNeuronList;
@@ -55,18 +55,18 @@ classdef imRetina < handle
             
             %%% Declare neurons and add them to Retina object %%%
             for i = 1:nNeurons
-                nObj = imNeuron(obj,IDs(i));
+                nObj = expNeuron(obj,IDs(i));
                 obj.Neurons(IDs(i)) = nObj;
             end
             
         end
-        %% Add Experiment to imRetina object
-        function expObj = addExp(obj,acqNum,IDs,acqMethod,expType,varargin)
-            %%% Check input expType matches known exp types %%%
-            if nargin < 5 || isempty(expType)
-                expType = 'none';
-            elseif ~any(strcmpi(expType,obj.supportedExps))
-                error('Unrecognized experiment type.');
+        %% Add Stimulus to expRetina object
+        function stimObj = addStim(obj,acqNum,IDs,acqMethod,stimType,varargin)
+            %%% Check input stimType matches known stim types %%%
+            if nargin < 5 || isempty(stimType)
+                stimType = 'none';
+            elseif ~any(strcmpi(stimType,obj.supportedStims))
+                error('Unrecognized stimulus type.');
             end
             
             if nargin < 4 || isempty(acqMethod)
@@ -84,42 +84,42 @@ classdef imRetina < handle
             %%% Clean acqNum inputs %%%
             acqNum = obj.cleanAcquisitionNumber(acqNum);
             
-            %%% Check that given exp has not already been declared %%%
-            if any(strcmp(obj.Exps.keys,acqNum))
-                error(['Given acquisition number already has an associated experiment:\n'...
-                    'Use "modifyExp" instead (in development).\n'])
+            %%% Check that given stim has not already been declared %%%
+            if any(strcmp(obj.Stims.keys,acqNum))
+                error(['Given acquisition number already has an associated stimulus:\n'...
+                    'Use "modifyStim" instead (in development).\n'])
             end
             
-            %%% Declare exp based on expType %%%
-            switch lower(expType)
+            %%% Declare stim based on stimType %%%
+            switch lower(stimType)
                 case 'none'
-                    expObj = imExp(obj,acqNum,acqMethod,expType);
+                    stimObj = expStim(obj,acqNum,acqMethod,stimType);
                 case 'flash'
                     %use varargin to modify defaults in the future
                     radius = 78 * .65;
                     delayTime = 2;
                     upTime = 3;
                     downTime = 2.5;
-                    expObj = imFlash(obj,acqNum,acqMethod,radius,delayTime,upTime,downTime);
+                    stimObj = expFlash(obj,acqNum,acqMethod,radius,delayTime,upTime,downTime);
                 case 'bars'
                     %use varargin to modify defaults in the future
-                    expObj = imBars(obj,acqNum,acqMethod);
+                    stimObj = expBars(obj,acqNum,acqMethod);
             end
             
-            %%% Add exp to relevant neurons, add to Retina object %%%
+            %%% Add stim to relevant neurons, add to Retina object %%%
             nNeurons = numel(IDs);
             for i = 1:nNeurons
                 nObj = obj.Neurons(IDs(i));
-                nObj.addExp(expObj);
-                expObj.addNeuron(nObj);
+                nObj.addStim(stimObj);
+                stimObj.addNeuron(nObj);
             end
-            obj.Exps(acqNum) = expObj;
+            obj.Stims(acqNum) = stimObj;
         end
         
         %%
-        function [expList,listEmpty] = getExpList(obj)
-            expList = obj.Exps.keys;
-            if isempty(expList)
+        function [stimList,listEmpty] = getStimList(obj)
+            stimList = obj.Stims.keys;
+            if isempty(stimList)
                 listEmpty = true;
             else
                 listEmpty = false;

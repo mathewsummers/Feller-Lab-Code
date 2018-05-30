@@ -1,4 +1,4 @@
-classdef imExp < handle
+classdef expStim < handle
     properties (SetAccess = private)
         AcqNum
         Type
@@ -8,15 +8,15 @@ classdef imExp < handle
     end
     
     methods
-        function obj = imExp(R,acqNum,acqMethod,expType)
+        function obj = expStim(R,acqNum,acqMethod,stimType)
             %%% Check inputs match expected types %%%
             assert(ischar(acqNum),'acqNum must be a three digit string');
             
-            if any(strcmpi(expType,R.supportedExps)) && any(strcmpi(acqMethod,R.supportedMethods))
-                obj.Type = lower(expType);
+            if any(strcmpi(stimType,R.supportedStims)) && any(strcmpi(acqMethod,R.supportedMethods))
+                obj.Type = lower(stimType);
                 obj.Method = lower(acqMethod);
             else
-                error('Unsupported experiment or recording type')
+                error('Unsupported stimulus or recording type')
             end
             
             obj.Neurons = containers.Map('keyType','int32','valueType','any');
@@ -26,7 +26,7 @@ classdef imExp < handle
         end
         
         function obj = addNeuron(obj,neuronObj)
-            %%% Add neuron object to exp's "neurons" container %%%
+            %%% Add neuron object to stim's "neurons" container %%%
             obj.Neurons(neuronObj.ID) = neuronObj;
         end
         

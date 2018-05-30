@@ -1,4 +1,4 @@
-classdef imFlash < imExp
+classdef expFlash < expStim
     properties
         radius
         delayTime
@@ -7,10 +7,10 @@ classdef imFlash < imExp
     end
     
     methods
-        function obj = imFlash(R,acqNum,acqMethod,radius,delayTime,...
+        function obj = expFlash(R,acqNum,acqMethod,radius,delayTime,...
                 upTime,downTime)
-            %%% Construct imExp / imFlash object %%%
-            obj@imExp(R,acqNum,acqMethod,'flash');
+            %%% Construct expStim / expFlash object %%%
+            obj@expStim(R,acqNum,acqMethod,'flash');
             obj.radius = radius; %in microns
             obj.delayTime = delayTime;
             obj.upTime = upTime;
