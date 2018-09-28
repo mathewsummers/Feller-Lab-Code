@@ -1,4 +1,4 @@
-classdef expBars < expStim
+classdef expBarsDS < expStim
     properties
         NumReps
         StimInfo
@@ -10,7 +10,7 @@ classdef expBars < expStim
     end
     
     methods
-        function obj = expBars(R,acqNum,acqMethod)
+        function obj = expBarsDS(R,acqNum,acqMethod)
             obj@expStim(R,acqNum,acqMethod,'bars');
             
             %%% Call loadRawStim function upon construction %%%
@@ -81,7 +81,7 @@ classdef expBars < expStim
             %%% Check that DS values have been calculated %%%
             if isempty(dataObj.PrefDir)
                 fprintf('Calculating DS values based on default methods.\n');
-                dataObj.calcDS
+                dataObj.calcDS;
             end
             
             %%% Retrieve stim and sort relevant data %%%
@@ -182,7 +182,8 @@ classdef expBars < expStim
                 yInt = mod(i-1,nReps) + 1;
                 pos = [(xStart + xInt*xEach) (yEnd - yInt*yEach) xEach yEach];
                 hA = axes('Units','Normalized','Position',pos,'XTick',[],'YTick',[],...
-                    'YLim',[mindF maxdF],'XLim',[tSec(1) tSec(end)],'NextPlot','replacechildren');
+                    'YLim',[mindF maxdF],'XLim',[tSec(1) tSec(end)],...
+                    'Box','on','NextPlot','replacechildren');
                 plot(tSec,plotData(:,i),'k','LineWidth',LW)
             end
             

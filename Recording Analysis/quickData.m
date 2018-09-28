@@ -63,7 +63,7 @@ end
 if contFunc
     if nDirs > 1 && nSpds > 1
         error('Unsure which stim conditions to sort by.')
-    elseif nDirs > 1
+    elseif (nDirs > 1) && (nTF == 1)
         stimConds = stimDirs;
         outNames{end+1} = 'stimDirs';
         plotAxis = 'Directions (degrees)';
@@ -80,7 +80,7 @@ if contFunc
     elseif nTF > 1
         negSpds = stimDirs > 180; %assume prefDir is the one less than 180 degrees, bad assumption
         tempFreq(negSpds) = -tempFreq(negSpds);
-        stimConds = tempFreq .* stimSpds;
+        stimConds = tempFreq .* stimSpds * .65;
         outNames{end+1} = 'stimSpds';
         plotAxis = 'Speed (microns / sec)';
         plotTitle = 'Velocity Tuning';
@@ -100,21 +100,13 @@ if contFunc
     %     ylabel('Total Spikes'); xlabel(plotAxis); title(plotTitle)
     
     if velocPlot
-        if ~showLess
-            [~,spikeDSI] = velocityTuning(ctSort,stimConds);
-        else
-            [~,spikeDSI] = velocityTuning(ctSort,stimConds,1);
-        end
+        [~,spikeDSI] = velocityTuning(ctSort,stimConds,showLess);
         outNames{end+1} = 'spikeDSI';
         outVars{end+1} = spikeDSI;
     end
     
     if dirPlot
-        if ~showLess
-            [hF,prefDir,spikeDSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimConds);
-        else
-            [hF,prefDir,spikeDSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimConds,1);
-        end
+        [hF,prefDir,spikeDSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimConds,showLess);
         [outNames{end+1:end+2}] = deal('prefDir','spikeDSI');
         [outVars{end+1:end+2}] = deal(prefDir,spikeDSI);
         hF.Children.XLabel.String = 'Total Spike Count Tuning';
@@ -122,7 +114,7 @@ if contFunc
     
 end
 
-if exist('stimConds','var');%clean up after giving lab meeting
+if exist('stimConds','var')%clean up after giving lab meeting
     nSecs = (length(d) / 1e4);
     [~,nReps] = size(tmSort);
     plotConds = repmat(unique(stimConds),1,nReps);
@@ -185,7 +177,7 @@ if exist('stimConds','var');%clean up after giving lab meeting
     [outVars{end+1:end+5}] = deal(maxFreq,hzSort,firstSpike,fsSort,instFreq);
     
     if velocPlot
-        [hF,hzDSI] = velocityTuning(hzSort,stimConds);
+        [hF,hzDSI] = velocityTuning(hzSort,stimConds,showLess);
         outNames{end+1} = 'hzDSI';
         outVars{end+1} = hzDSI;
         hF.Children(2).YLabel.String = 'Peak Firing (Hz)';

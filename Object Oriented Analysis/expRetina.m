@@ -103,7 +103,7 @@ classdef expRetina < handle
                     stimObj = expFlash(obj,acqNum,acqMethod,radius,delayTime,upTime,downTime);
                 case 'bars'
                     %use varargin to modify defaults in the future
-                    stimObj = expBars(obj,acqNum,acqMethod);
+                    stimObj = expBarsDS(obj,acqNum,acqMethod);
             end
             
             %%% Add stim to relevant neurons, add to Retina object %%%

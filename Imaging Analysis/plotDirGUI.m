@@ -1,6 +1,15 @@
-function plotDirGUI(dF,onSort,offSort,stimDirs)
+function plotDirGUI(dF,onSort,offSort,stimDirs,ROIs)
 
-[nFrames,nROIs] = size(dF);
+if nargin < 5 || isempty(ROIs)
+    [nFrames,nROIs] = size(dF);
+else
+    dF = dF(:,ROIs);
+    onSort = onSort(:,:,ROIs);
+    offSort = offSort(:,:,ROIs);
+    [nFrames,nROIs] = size(dF);
+end
+
+
 [onDirs,onReps,onROIs] = size(onSort);
 [offDirs,offReps,offROIs] = size(offSort);
 assert(onROIs == offROIs,'Input matrices do not share the same number of ROIs');

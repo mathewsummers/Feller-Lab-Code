@@ -53,7 +53,7 @@ classdef expSpikes < expData
                 error('Unrecognized DS calculation method.');
             end
             
-            %%% Call calcDS from expBars object, save used method %%%
+            %%% Call calcDS from expBarsDS object, save used method %%%
             switch lower(dsMethod)
                 case 'count'
                     [obj.PrefDir,obj.DSI,obj.VecLength,obj.PrefSpikes,...
@@ -63,13 +63,18 @@ classdef expSpikes < expData
             end
         end
         
+        function obj = calcInstRate(obj)
+            %%% Calculate instantaneous firing rate of spike data %%%
+            
+        end
+        
         function hF = plotSortData(obj)
-            %%% Call plotSortData from expBars object %%%
+            %%% Call plotSortData from expBarsDS object %%%
             hF = plotSortData(obj.Stim,obj);
         end
         
         function hF = plotDS(obj)
-            %%% Call plotDS from expBars object %%%
+            %%% Call plotDS from expBarsDS object %%%
             hF = plotDS(obj.Stim,obj);
         end
         

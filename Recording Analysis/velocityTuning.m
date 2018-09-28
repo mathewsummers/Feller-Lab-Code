@@ -29,7 +29,7 @@ if ~showLess
     end
     
     subplot(2,4,2:3)
-    plot(a(b+1:end),DSI,'ko-','lineWidth',2);
+    plot(a(b+1:end),DSI,'ko-','markerfacecolor','k','markersize',6,'lineWidth',1);
     xLine = refline(0,0);
     set(xLine,{'Color','LineStyle'},{[0 0 0],'--'});
     title('Selectivity across Speeds')
@@ -38,13 +38,13 @@ if ~showLess
     ylim([-1 1])
     
     subplot(2,4,5:6)
-    plot(abs(a(1:b)),ctSort(1:b,:),'r','lineWidth',2)
+    plot(abs(a(1:b)),ctSort(1:b,:),'ro-','lineWidth',1)
     title('Null')
     ylim([0 axMax])
     ylabel('Spike Count')
     
     subplot(2,4,7:8)
-    plot(a(b+1:end),ctSort(b+1:end,:),'b','lineWidth',2)
+    plot(a(b+1:end),ctSort(b+1:end,:),'bo-','lineWidth',1)
     title('Pref')
     ylim([0 axMax])
     xlabel('Speed (microns / s)')
