@@ -19,7 +19,11 @@ classdef expBarsDS < expStim
         
         function stim = loadRawStim(obj)
             %%% Move to appropriate directory %%%
-            newDir = sprintf('%s%s',obj.Retina.Directory, obj.Retina.Date);
+            if strcmpi(obj.Method,'Ca')
+                newDir = sprintf('%s%s',obj.Retina.imagingDirectory, obj.Retina.Date);
+            else
+                newDir = sprintf('%s%s',obj.Retina.recordingDirectory, obj.Retina.Date);
+            end
             oldDir = cd(newDir);
             
             %%% Load and save stim info %%%
@@ -132,7 +136,7 @@ classdef expBarsDS < expStim
             switch obj.Method
                 case 'spikes'
                     LW = .5;
-                    scaleBarEnd = round(scaleBarSize / 100) * 100;
+                    scaleBarEnd = round(scaleBarSize / 10) * 10;
                     scaleBar = [0 scaleBarEnd];
                 case 'vclamp'
                     LW = .8;

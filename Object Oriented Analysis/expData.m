@@ -21,7 +21,7 @@ classdef expData < handle
             abfName = sprintf('%s%s.abf',abfDate,abfNum);
             
             %%% Switch directories %%%
-            newDir = sprintf('%s%s',obj.Stim.Retina.Directory, obj.Stim.Retina.Date);
+            newDir = sprintf('%s%s',obj.Stim.Retina.recordingDirectory, obj.Stim.Retina.Date);
             oldDir = cd(newDir);
             
             %%% Load axon binary file, squeeze singleton dimensions %%%

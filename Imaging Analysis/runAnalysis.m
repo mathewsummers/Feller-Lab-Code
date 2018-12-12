@@ -33,7 +33,7 @@ for j = 1:nROIs
     [~,maxPrefDir,maxDSI,maxVec] = dirTuning(fMaxSort(:,:,j),stimDirs,1);
     maxValList(:,j) = [maxPrefDir,maxDSI,maxVec];
     fMin = min(stimDF(:,:,j));
-    fMin = abs(fMin - max(fMin)); %Maybe check this later
+    %fMin = abs(fMin - max(fMin)); %Maybe check this later
     fMinSort(:,:,j) = fMin(sortTable);
     [~,minPrefDir,minDSI,minVec] = dirTuning(fMinSort(:,:,j),stimDirs,1);
     

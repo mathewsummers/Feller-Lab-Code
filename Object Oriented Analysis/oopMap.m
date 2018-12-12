@@ -1,3 +1,9 @@
+
+
+R = createRetina(date,genotype,rig);
+R.addNeuron(ids)
+R.addStim(acqNum,ids,method,stim);
+
 %%%%% expRetina
 % general data on experimental conditions, contains neurons and stims
 

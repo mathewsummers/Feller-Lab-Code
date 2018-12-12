@@ -10,7 +10,8 @@ classdef expRetina < handle
         Misc
     end
     properties (Hidden = true)
-        Directory = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
+        recordingDirectory = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
+        imagingDirectory = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\Imaging Sessions\';
         supportedRigs = {'','SOS','MOM'};
         supportedStims = {'none','flash','bars'};
         supportedMethods = {'Spikes','Vclamp','Ca'};
@@ -78,7 +79,7 @@ classdef expRetina < handle
             %%% Check that input neuron IDs exist %%%
             neuronIDsList = obj.getNeuronList;
             if any(~ismember(IDs,neuronIDsList))
-                error('At least one provided ID does not match any declared neurons.\n')
+                error('At least one provided ID does not match any declared neurons.')
             end
             
             %%% Clean acqNum inputs %%%

@@ -36,7 +36,8 @@ if ~isempty(stimDirs)
         b = b - nTrSpikes;
     end
     %legend(hA.Children(c(1:nStims:end)),num2str(q));
-    
+else
+    set(hA.Children(:),'Color',[0 0 0]);
 end
 
 end

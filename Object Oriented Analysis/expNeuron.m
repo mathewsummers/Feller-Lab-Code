@@ -24,6 +24,8 @@ classdef expNeuron < handle
             %%% Check recording method, initialize imData object %%%
             if strcmpi(stim.Method,'spikes')
                 dObj = expSpikes(obj,stim);
+            elseif strcmpi(stim.Method,'ca')
+                dObj = expCa(obj,stim);
             else
                 dObj = expData(obj,stim);
             end
