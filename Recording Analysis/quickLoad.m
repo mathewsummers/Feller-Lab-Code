@@ -34,9 +34,9 @@ elseif strcmp(dirName(3:4),'11')
 elseif strcmp(dirName(3:4),'12')
     abfDate = [dirName(1:2) 'd' dirName(5:end)];
 elseif strcmp(dirName(3),'0') %account for clampex's peculiar naming conventions
-    abfDate = [dirName(1:2) dirName(4:end)];
+    abfDate = [dirName(1:2) dirName(4:6)];
 else
-    abfDate = dirName;
+    abfDate = dirName(1:5);
 end
 
 abfName = sprintf('%s%s.abf',abfDate,abfStim);

@@ -13,8 +13,15 @@ else
     %     else
     %         stimDate = stimDate;
     %     end
-    newDir = sprintf('%s%s','C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\',stimDate);
-    oldDir = cd(newDir);
+    
+    %following line assumes Mathew's computer and system architecture
+    dsgcDir = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
+    searchDirName = sprintf('%s*',stimDate); %find directories that match input date
+    
+    oldDir = cd(dsgcDir);
+    newDir = dir(searchDirName);
+    cd(newDir.name);
+    
     if showLess
         hF = quickLoad(stimNum,stimDate,1);
     else
