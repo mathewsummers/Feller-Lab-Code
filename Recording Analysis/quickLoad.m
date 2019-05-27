@@ -16,7 +16,8 @@ function hF = quickLoad(abfStim,dirName,hideOutput)
 % MTS 5/15/2016
 
 if nargin < 3
-    hideOutput = 0;
+    %Unless requested, don't display raw data traces
+    hideOutput = false;
 end
 
 if nargin < 2 || isempty(dirName) 
@@ -25,6 +26,7 @@ if nargin < 2 || isempty(dirName)
     fprintf('Loading from current folder; %s \n',dirName);
 end
 
+%account for clampex enforcing 5 digit dates
 if strcmp(dirName(3:4),'10')
     abfDate = [dirName(1:2) 'o' dirName(5:end)];
 elseif strcmp(dirName(3:4),'11')
@@ -40,8 +42,12 @@ end
 abfName = sprintf('%s%s.abf',abfDate,abfStim);
 
 %following line assumes Mathew's computer and system architecture
-newDir = sprintf('%s%s','C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\',dirName);
-oldDir = cd(newDir);
+dsgcDir = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
+searchDirName = sprintf('%s*',dirName); %find directories that match input date
+
+oldDir = cd(dsgcDir);
+newDir = dir(searchDirName);
+cd(newDir.name);
 
 [d,si] = abfload(abfName);
 d = squeeze(d);

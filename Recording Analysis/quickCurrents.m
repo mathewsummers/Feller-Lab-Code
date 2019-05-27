@@ -42,10 +42,13 @@ if exist(fn1,'file')
     stimDirs = stimInfo(:,1);
     try %terrible fix
         stimSpds = stimInfo(:,2);
+        stimTFs = stimInfo(:,3);
     catch
         stimSpds = zeros(1,length(stimDirs));
+        stimTFs = zeros(1,length(stimDirs));
     end
     
+    nTFs = numel(unique(stimTFs));
     nDirs = numel(unique(stimDirs));
     nSpds = numel(unique(stimSpds));
     contFunc = 1;
@@ -55,27 +58,38 @@ elseif exist(fn2,'file')
     stimDirs = stimDirs';
     nDirs = numel(unique(stimDirs));
     nSpds = 1;
+    nTFs = 1;
     contFunc = 1;
     
 end
 
-if contFunc
+if contFunc %if a stim file exists, continue processing
     if nDirs > 1 && nSpds > 1
         error('Unsure which stim conditions to sort by.')
-    elseif nDirs > 1
+    elseif nDirs > 1 && nTFs == 1 %sort by dirs
         stimConds = stimDirs;
         outNames{end+1} = 'stimDirs';
         plotAxis = 'Directions (degrees)';
         plotTitle = 'Direction Tuning';
         velocPlot = 0;
         dirPlot = 1;
-    elseif nSpds > 1
+    elseif nSpds > 1 %sort by speeds
         stimConds = stimSpds * .65; %convert from pixels to microns
         outNames{end+1} = 'stimSpds';
         plotAxis = 'Speed (microns / sec)';
         plotTitle = 'Velocity Tuning';
         velocPlot = 1;
         dirPlot = 0;
+    elseif nTFs > 1 %sort by TFs, e.g. PN gratings
+        negSpds = stimDirs > 180; %assume prefDir is the one less than 180 degrees, bad assumption
+        stimTFs(negSpds) = -stimTFs(negSpds);
+        stimConds = stimTFs .* stimSpds * .73;%0.73 since all vClamp gratings done post SOS changes
+        outNames{end+1} = 'stimSpds';
+        plotAxis = 'Speed (microns / sec)';
+        plotTitle = 'Velocity Tuning';
+        velocPlot = 1;
+        dirPlot = 0;
+        
     end
     outVars{end+1} = stimConds;
     

@@ -5,7 +5,8 @@ if nargin<3 || isempty(showLess)
 end
 
 if nargin<2 || isempty(stimDate)
-    quickLoad(stimNum);
+    hF = quickLoad(stimNum);
+    set(hF,'Position',[0 210 hF.Position(3) hF.Position(4)]);
 else
     %     if strcmp(stimDate(3),'0') %account for clampex's peculiar naming conventions
     %         stimDate = [stimDate(1:2) stimDate(4:end)];
@@ -15,9 +16,10 @@ else
     newDir = sprintf('%s%s','C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\',stimDate);
     oldDir = cd(newDir);
     if showLess
-        quickLoad(stimNum,stimDate,1)
+        hF = quickLoad(stimNum,stimDate,1);
     else
-        quickLoad(stimNum,stimDate)
+        hF = quickLoad(stimNum,stimDate);
+        set(hF,'Position',[0 210 hF.Position(3) hF.Position(4)]);
     end
 end
 
@@ -100,13 +102,15 @@ if contFunc
     %     ylabel('Total Spikes'); xlabel(plotAxis); title(plotTitle)
     
     if velocPlot
-        [~,spikeDSI] = velocityTuning(ctSort,stimConds,showLess);
+        [hF,spikeDSI] = velocityTuning(ctSort,stimConds,showLess);
+        %set(hF,'Position',[0 0 hF.Position(3) hF.Position(4)]);
         outNames{end+1} = 'spikeDSI';
         outVars{end+1} = spikeDSI;
     end
     
     if dirPlot
         [hF,prefDir,spikeDSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimConds,showLess);
+        set(hF,'Position',[0 0 hF.Position(3) hF.Position(4)]);
         [outNames{end+1:end+2}] = deal('prefDir','spikeDSI');
         [outVars{end+1:end+2}] = deal(prefDir,spikeDSI);
         hF.Children.XLabel.String = 'Total Spike Count Tuning';
@@ -120,6 +124,7 @@ if exist('stimConds','var')%clean up after giving lab meeting
     plotConds = repmat(unique(stimConds),1,nReps);
     if ~showLess
         hF = rasterPlot(tmSort',nSecs,plotConds');
+        set(hF,'Position',[360 210 hF.Position(3) hF.Position(4)]);
         
         %         a = ctSort'; %bad fix
         %         a = a(:);
@@ -157,6 +162,7 @@ if exist('stimConds','var')%clean up after giving lab meeting
         end
         
         set(hF.Children,'YLim',[0 ceil(max(maxFreq*.1))*10],'XLim',[0 tEnd]);
+        set(hF,'Position',[720 210 hF.Position(3) hF.Position(4)]);
     else
         
         for n=1:nTrials
@@ -178,11 +184,12 @@ if exist('stimConds','var')%clean up after giving lab meeting
     
     if velocPlot
         [hF,hzDSI] = velocityTuning(hzSort,stimConds,showLess);
+        %set(hF,'Position',[720 0 hF.Position(3) hF.Position(4)]);
         outNames{end+1} = 'hzDSI';
         outVars{end+1} = hzDSI;
         hF.Children(2).YLabel.String = 'Peak Firing (Hz)';
         if ~showLess
-            figure;
+            hF = figure;
             plotStims = unique(stimConds);
             indx1 = numel(find(plotStims < 0));
             plotStims = abs(plotStims);
@@ -193,12 +200,14 @@ if exist('stimConds','var')%clean up after giving lab meeting
             legend([a(1) b(1)],'Null','Pref','Location','SouthEast');
             ylim([(min(firstSpike) - .15),(max(firstSpike + .15))])
             grid on
+            set(hF,'Position',[360 0 hF.Position(3) hF.Position(4)]);
         end
     end
     
     if dirPlot
         if ~showLess
             [hF,~,hzDSI,~,~] = dirTuning(hzSort,stimConds);
+            set(hF,'Position',[720 0 hF.Position(3) hF.Position(4)]);
         else
             [hF,~,hzDSI,~,~] = dirTuning(hzSort,stimConds,1);
         end
@@ -206,11 +215,12 @@ if exist('stimConds','var')%clean up after giving lab meeting
         [outVars{end+1}] = deal(hzDSI);
         hF.Children.XLabel.String = 'Peak Firing (Hz) Tuning';
         if ~showLess
-            figure;
+            hF = figure;
             plot(stimConds,firstSpike,'.','MarkerSize',16);
             xlabel(plotAxis); ylabel('Time (sec)'); title('Latency of First Spike')
             ylim([(min(firstSpike) - .15),(max(firstSpike + .15))])
             grid on
+            set(hF,'Position',[360 0 hF.Position(3) hF.Position(4)]);
         end
     end
     
@@ -226,12 +236,12 @@ end
 if nargin < 4
     
     for i = 1:length(outNames)
-        assignin('base',outNames{i},outVars{i});
+        assignin('caller',outNames{i},outVars{i});
     end
     
 else
     for i = 1:length(varargin)
-        assignin('base',varargin{i},eval(varargin{i}));
+        assignin('caller',varargin{i},eval(varargin{i}));
     end
     
 end
