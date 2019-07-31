@@ -9,7 +9,7 @@ if nargin < 3 || isempty(hideOutput)
 end
 
 if nargin < 2 || isempty(vSteps)
-    vSteps = -70:10:0;
+    vSteps = -70:10:0; %mV
 end
 
 %Ensure matching number of trials and voltage steps

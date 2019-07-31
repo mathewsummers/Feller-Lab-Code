@@ -21,8 +21,10 @@ classdef expData < handle
             abfName = sprintf('%s%s.abf',abfDate,abfNum);
             
             %%% Switch directories %%%
-            newDir = sprintf('%s%s',obj.Stim.Retina.recordingDirectory, obj.Stim.Retina.Date);
-            oldDir = cd(newDir);
+            oldDir = cd(obj.Stim.Retina.recordingDirectory); %move to DSGC recordings directory
+            searchDirName = sprintf('%s*',obj.Stim.Retina.Date); %find directories that match input date
+            newDir = dir(searchDirName);
+            cd(newDir.name);
             
             %%% Load axon binary file, squeeze singleton dimensions %%%
             [d,si] = abfload(abfName);

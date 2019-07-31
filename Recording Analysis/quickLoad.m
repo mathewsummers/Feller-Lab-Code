@@ -24,7 +24,11 @@ if nargin < 2 || isempty(dirName)
     %if no input argument, assume current directory.
     [~,dirName] = fileparts(pwd);
     fprintf('Loading from current folder; %s \n',dirName);
+else
+    dirName = char(dirName); %ensure indexable characters, not a string
 end
+
+assert(size(abfStim,1) == 1,'abfStim must be a single string, not an array of strings.');
 
 %account for clampex enforcing 5 digit dates
 if strcmp(dirName(3:4),'10')

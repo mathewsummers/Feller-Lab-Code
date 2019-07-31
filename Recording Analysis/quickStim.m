@@ -1,10 +1,14 @@
 function quickStim(stimNum,stimDate)
 
-newDir = sprintf('%s%s','C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\',stimDate);
-oldDir = cd(newDir);
+dsgcDir = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
+searchDirName = sprintf('%s*',stimDate); %find directories that match input date
 
-fn1 = sprintf('stim%s.txt',stimNum);
-stimInfo = load('-ASCII',fn1);
+oldDir = cd(dsgcDir);
+newDir = dir(searchDirName);
+cd(newDir.name);
+
+fn = sprintf('stim%s.txt',stimNum);
+stimInfo = load('-ASCII',fn);
 assignin('base','stimInfo',stimInfo);
 % order of stimInfo depends on stim function used, but usually:
 % 1st column: bar directions
@@ -15,6 +19,5 @@ assignin('base','stimInfo',stimInfo);
 % 6th column: bar brightness
 
 cd(oldDir);
-
 
 end

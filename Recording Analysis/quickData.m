@@ -117,7 +117,9 @@ if contFunc
     
     if dirPlot
         [hF,prefDir,spikeDSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimConds,showLess);
-        set(hF,'Position',[0 0 hF.Position(3) hF.Position(4)]);
+        if ~showLess
+            set(hF,'Position',[0 0 hF.Position(3) hF.Position(4)]);
+        end
         [outNames{end+1:end+2}] = deal('prefDir','spikeDSI');
         [outVars{end+1:end+2}] = deal(prefDir,spikeDSI);
         hF.Children.XLabel.String = 'Total Spike Count Tuning';
