@@ -1,4 +1,5 @@
 function quickStim(stimNum,stimDate)
+% Function to load stimXXX.txt files for a given experiment.
 
 dsgcDir = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
 searchDirName = sprintf('%s*',stimDate); %find directories that match input date
@@ -9,7 +10,7 @@ cd(newDir.name);
 
 fn = sprintf('stim%s.txt',stimNum);
 stimInfo = load('-ASCII',fn);
-assignin('base','stimInfo',stimInfo);
+assignin('caller','stimInfo',stimInfo);
 % order of stimInfo depends on stim function used, but usually:
 % 1st column: bar directions
 % 2nd column: bar speeds

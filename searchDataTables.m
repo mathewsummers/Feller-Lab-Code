@@ -1,15 +1,15 @@
-function [searchResults,dTableFull] = searchDataTables(printFolders,compileTables)
+function [dTableFull,searchResults] = searchDataTables(compileTables,printFolders)
 % Function to search through DSGC Recording folders and find those which
 % have a 'data table' organizational array. Optional flags to print which
 % folders contain these arrays, and to compile these into a single table.
 
-if nargin < 2 || isempty(compileTables)
-    compileTables = false;
-    dTableFull = [];
+if nargin < 2 || isempty(printFolders)
+    printFolders = false;
 end
 
-if nargin < 1 || isempty(printFolders)
-    printFolders = false;
+if nargin < 1 || isempty(compileTables)
+    compileTables = false;
+    dTableFull = [];
 end
 
 dsgcDir = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings';

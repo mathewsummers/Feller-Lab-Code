@@ -197,20 +197,20 @@ if exist('stimConds','var')%clean up after giving lab meeting
         outNames{end+1} = 'hzDSI';
         outVars{end+1} = hzDSI;
         hF.Children(2).YLabel.String = 'Peak Firing (Hz)';
-        if ~showLess
-            hF = figure;
-            plotStims = unique(stimConds);
-            indx1 = numel(find(plotStims < 0));
-            plotStims = abs(plotStims);
-            a = plot(plotStims(1:indx1),fsSort(1:indx1,:),'.r','MarkerSize',16);
-            hold on
-            b = plot(plotStims(indx1 + 1:end),fsSort(indx1+1:end,:),'.b','MarkerSize',16);
-            xlabel(plotAxis); ylabel('Time (sec)'); title('Latency of First Spike')
-            legend([a(1) b(1)],'Null','Pref','Location','SouthEast');
-            ylim([(min(firstSpike) - .15),(max(firstSpike + .15))])
-            grid on
-            set(hF,'Position',[360 0 hF.Position(3) hF.Position(4)]);
-        end
+%         if ~showLess %Plot latency of spiking
+%             hF = figure;
+%             plotStims = unique(stimConds);
+%             indx1 = numel(find(plotStims < 0));
+%             plotStims = abs(plotStims);
+%             a = plot(plotStims(1:indx1),fsSort(1:indx1,:),'.r','MarkerSize',16);
+%             hold on
+%             b = plot(plotStims(indx1 + 1:end),fsSort(indx1+1:end,:),'.b','MarkerSize',16);
+%             xlabel(plotAxis); ylabel('Time (sec)'); title('Latency of First Spike')
+%             legend([a(1) b(1)],'Null','Pref','Location','SouthEast');
+%             ylim([(min(firstSpike) - .15),(max(firstSpike + .15))])
+%             grid on
+%             set(hF,'Position',[361 0 hF.Position(3) hF.Position(4)]);
+%         end
     end
     
     if dirPlot
@@ -223,14 +223,14 @@ if exist('stimConds','var')%clean up after giving lab meeting
         [outNames{end+1}] = deal('hzDSI');
         [outVars{end+1}] = deal(hzDSI);
         hF.Children.XLabel.String = 'Peak Firing (Hz) Tuning';
-        if ~showLess
-            hF = figure;
-            plot(stimConds,firstSpike,'.','MarkerSize',16);
-            xlabel(plotAxis); ylabel('Time (sec)'); title('Latency of First Spike')
-            ylim([(min(firstSpike) - .15),(max(firstSpike + .15))])
-            grid on
-            set(hF,'Position',[360 0 hF.Position(3) hF.Position(4)]);
-        end
+%         if ~showLess %Plot latency of spiking
+%             hF = figure;
+%             plot(stimConds,firstSpike,'.','MarkerSize',16);
+%             xlabel(plotAxis); ylabel('Time (sec)'); title('Latency of First Spike')
+%             ylim([(min(firstSpike) - .15),(max(firstSpike + .15))])
+%             grid on
+%             set(hF,'Position',[360 0 hF.Position(3) hF.Position(4)]);
+%         end
     end
     
     
