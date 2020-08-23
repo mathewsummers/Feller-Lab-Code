@@ -12,12 +12,15 @@ if nargin < 2 || isempty(localTrue)
 end
 
 %%% Establish supported categories to test
-supportedStimTypes = categorical(["iv curve","flash","c steps pos","c steps neg",...
-    "ds bars slow","ds bars fast","adj bars spds","short bars spds",...
-    "wide grates spds","z stack"]);
-supportedRecTypes = categorical(["c clamp","c attach","v clamp exc","v clamp inh","image"]);
-supportedCellTypes = categorical(["ON","ONOFF","UNKNOWN"]);
-supportedOrientations = categorical(["vl","vr","dl","dr","unoriented"]);
+load('dTable Supported Categories');
+% supportedStimTypes = categorical(["iv curve","flash","c steps pos","c steps neg",...
+%     "ds bars slow","ds bars fast","adj bars spds","short bars spds",...
+%     "wide grates spds","wide grates half sp","wide grates double sp",...
+%     "rdks","z stack"]);
+% supportedRecTypes = categorical(["c clamp","c attach","v clamp exc","v clamp inh","image"]);
+% supportedCellTypes = categorical(["ON","ONOFF","AC","UNKNOWN"]);
+% supportedOrientations = categorical(["vl","vr","dl","dr","ul","ur"]); %u = unoriented
+% supportedRig = categorical(["SOS","pre-DMD SOS"]);
 
 %%% Check that no new stim types are being introduced (e.g. due to typos)
 uStimType = unique(dTable.Stim);
@@ -49,6 +52,14 @@ approvedOrientation = any((uOrientation == supportedOrientations)');
 if any(~approvedOrientation)
     error('%s is an unrecognized orientation. \n',...
         uOrientation(~approvedOrientation));
+end
+
+%%% Check that no rigs are being introduced
+uRig = unique(dTable.Rig);
+approvedRig = any((uRig == supportedRig)');
+if any(~approvedRig)
+    error('%s is an unrecognized rig. \n',...
+        uRig(~approvedRig));
 end
 
 %%% Check that for a given Cell Number, there is only one associated

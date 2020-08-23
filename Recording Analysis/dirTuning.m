@@ -1,4 +1,10 @@
-function [hF, prefDir, DSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimDirs,showLess,makeFig)
+function [hF, prefDir, DSI,vecLength,prefSpikes,nullSpikes] = dirTuning(ctSort,stimDirs,showLess,makeFig,rBounds)
+
+if nargin<5 || isempty(rBounds)
+    rFlag = false;
+else
+    rFlag = true;
+end
 
 if nargin<4 || isempty(makeFig)
     makeFig = 1;
@@ -13,8 +19,8 @@ ctMeanPlot = [ctMean; ctMean(1,:)];
 
 nReps = size(ctSort,2);
 
-uDirs = unique(stimDirs); %potentially problematic way of doing things; 
-% if stimDirs is shifted in a non-uniform way (e.g. resets to 0 after passing 360) 
+uDirs = unique(stimDirs); %potentially problematic way of doing things;
+% if stimDirs is shifted in a non-uniform way (e.g. resets to 0 after passing 360)
 % then ctSort will now be incorrectly indexed
 uDirs = deg2rad(uDirs);
 
@@ -60,19 +66,26 @@ if ~showLess
         hF = [];
     end
     
+    %Set radial bounds
+    pAx = polaraxes();
     
-    plotChild = polar(uDirsPlot,ctSortPlot);
+    plotChild = polarplot(uDirsPlot,ctSortPlot);
     set(plotChild(1:nReps),'LineWidth',1);
     
     hold on
     
-    plotChild = polar(uDirs,ctMeanPlot,'k');
+    plotChild = polarplot(uDirs,ctMeanPlot,'k');
     set(plotChild(1),'LineWidth',2)
     
-    plotChild = compass(sum(x)*max(ctMean),sum(y)*max(ctMean),'k'); %think about this
+    %plotChild = compass(sum(x)*max(ctMean),sum(y)*max(ctMean),'k'); %think about this
+    plotChild = polarplot(deg2rad([prefDir, prefDir]), [0 max(ctMean)*vecLength],'k');
     set(plotChild(1),'LineWidth',1.5)
     
     title(titleStr);
+    if rFlag
+        pAx.RLim = rBounds;
+    end
+    
 else
     hF = [];
 end

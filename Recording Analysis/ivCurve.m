@@ -1,4 +1,4 @@
-function [Rin,rSq] = ivCurve(d,vSteps,hideOutput,si)
+function [Rin, Eleak, rSq] = ivCurve(d,vSteps,hideOutput,si)
 
 if nargin < 4 || isempty(si)
     si = 100;
@@ -30,6 +30,7 @@ y = mean(dSteps,1);
 %Compute linear regression
 [pp,rSq] = computeRegression(vSteps,y);
 Rin = 1 / (pp(1) * 1e-9);%convert slope from nS to S
+Eleak = -pp(2) / pp(1); %find y intercept
 
 %Plot outputs unless suppressed
 if ~hideOutput

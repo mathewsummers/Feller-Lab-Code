@@ -10,9 +10,9 @@ elseif Fs == 1.48 || Fs == 2.96 %Ca2+ imaging data
 else %otherwise assume ephys
     LW = .5;
     if sum(stimDF(:)) > 0 %try to determine if primarily positive or negative signal
-        scaleBar = [0 200];
+        scaleBar = [0 20];
     else
-        scaleBar = [-200 0];
+        scaleBar = [-20 0];
     end
 end
 

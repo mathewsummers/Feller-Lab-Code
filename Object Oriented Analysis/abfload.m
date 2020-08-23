@@ -91,7 +91,7 @@ channels='a';
 % 5-30 min
 chunk=0.05;
 machineF='ieee-le';
-verbose=1;
+verbose=0;
 % assign values of optional input parameters, if any were given
 pvpmod(varargin);   
 % some constants

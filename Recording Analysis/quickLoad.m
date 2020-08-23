@@ -32,11 +32,11 @@ assert(size(abfStim,1) == 1,'abfStim must be a single string, not an array of st
 
 %account for clampex enforcing 5 digit dates
 if strcmp(dirName(3:4),'10')
-    abfDate = [dirName(1:2) 'o' dirName(5:end)];
+    abfDate = [dirName(1:2) 'o' dirName(5:6)];
 elseif strcmp(dirName(3:4),'11')
-    abfDate = [dirName(1:2) 'n' dirName(5:end)];
+    abfDate = [dirName(1:2) 'n' dirName(5:6)];
 elseif strcmp(dirName(3:4),'12')
-    abfDate = [dirName(1:2) 'd' dirName(5:end)];
+    abfDate = [dirName(1:2) 'd' dirName(5:6)];
 elseif strcmp(dirName(3),'0') %account for clampex's peculiar naming conventions
     abfDate = [dirName(1:2) dirName(4:6)];
 else

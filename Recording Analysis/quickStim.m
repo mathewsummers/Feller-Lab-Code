@@ -1,6 +1,14 @@
 function quickStim(stimNum,stimDate)
 % Function to load stimXXX.txt files for a given experiment.
 
+if nargin < 2 || isempty(stimDate) 
+    %if no input argument, assume current directory.
+    [~,stimDate] = fileparts(pwd);
+    fprintf('Loading from current folder; %s \n',stimDate);
+else
+    stimDate = char(stimDate); %ensure indexable characters, not a string
+end
+
 dsgcDir = 'C:\Users\Mathew\Documents\MATLAB\Feller Lab\DSGC Recordings\';
 searchDirName = sprintf('%s*',stimDate); %find directories that match input date
 
